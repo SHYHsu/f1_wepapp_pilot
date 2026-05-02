@@ -1,3 +1,8 @@
+import streamlit as st  # 這行絕對要在最上面
+import pandas as pd
+import requests
+import plotly.express as px
+
 # --- 1. 數據抓取函數 (加入防護機制) ---
 @st.cache_data
 def get_driver_standings(year):
