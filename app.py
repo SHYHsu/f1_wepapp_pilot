@@ -37,26 +37,24 @@ def get_driver_standings(year):
 
 @st.cache_data(show_spinner=False)
 def get_race_results(year):
-    # 改良策略：專注於抓取賽程與分站冠軍 (P1)
+    # 第一步：抓取全年度賽程清單
     schedule_url = f"https://api.jolpi.ca/ergast/f1/{year}.json?limit=1000"
+    # 第二步：僅抓取分站冠軍 (results/1.json)
     results_url = f"https://api.jolpi.ca/ergast/f1/{year}/results/1.json?limit=1000"
     
     try:
         headers = {'User-Agent': 'Mozilla/5.0'}
-        # 獲取完整賽程
         sched_res = requests.get(schedule_url, timeout=10, headers=headers).json()
         all_races = sched_res['MRData']['RaceTable']['Races']
         
-        # 僅獲取 P1 結果 (results/1.json)
         res_res = requests.get(results_url, timeout=10, headers=headers).json()
         results_data = res_res['MRData']['RaceTable']['Races']
-        # 建立 round 到 Winner 的對照表
         winner_map = {r['round']: r['Results'][0]['Driver']['familyName'] for r in results_data if r.get('Results')}
         
         final_schedule = []
         for r in all_races:
             rnd = r['round']
-            winner = winner_map.get(rnd, "TBC") # 若無冠軍資料則顯示待定
+            winner = winner_map.get(rnd, "TBC")
             
             final_schedule.append({
                 "Round": int(rnd),
@@ -71,12 +69,16 @@ def get_race_results(year):
         return None
 
 # 3. 側邊欄 UI
-# 最終解決方案：直接讀取 GitHub 專案內的本地圖片，避免外部連結失效
-try:
-    st.sidebar.image("img/f1_logo.png", width=150) # 請確保 img 資料夾內有這張圖
-except:
-    # 備援：若本地圖檔不存在，使用穩定的維基百科連結
-    st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg", width=150)
+# 解決鋸齒狀並對齊寬度：使用 CSS 注入
+st.sidebar.markdown(
+    """
+    <div style="text-align: left;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" 
+             style="width: 100%; max-width: 250px; image-rendering: -webkit-optimize-contrast; margin-bottom: 20px;">
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
 st.sidebar.title("CONTROL CENTER")
 selected_year = st.sidebar.selectbox("SEASON", list(range(2024, 2014, -1)))
@@ -97,7 +99,7 @@ else:
         col1, col2 = st.columns([1, 2])
         
         with col1:
-            # 照片匹配修正：Title_Case (例如 Lewis_Hamilton.png)
+            # 照片匹配邏輯：Title_Case (例如 Lewis_Hamilton.png)
             name_parts = champ['DriverID'].replace('-', '_').split('_')
             formatted_id = "_".join([p.capitalize() for p in name_parts])
             img_path = f"img/{formatted_id}.png"
@@ -114,6 +116,7 @@ else:
             st.markdown(f"**{champ['Nationality']}** | BORN {birth_year}")
             
             m1, m2 = st.columns(2)
+            # 純數字顯示
             m1.metric("POINTS", champ['Points'])
             m2.metric("WINS", champ['Wins'])
             st.write(f"**CONSTRUCTOR:** {champ['Constructor']}")
@@ -127,7 +130,6 @@ else:
                          hide_index=True, use_container_width=True)
         with c_right:
             st.subheader("CIRCUIT LOCATIONS")
-            # 修正：地圖經緯度名稱對齊
             fig = px.scatter_mapbox(df_races, lat="lat", lon="long", hover_name="Grand Prix",
                                     zoom=0.5, height=400)
             fig.update_layout(mapbox_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0})
@@ -139,24 +141,27 @@ else:
         m1.metric("ROUNDS", len(df_races))
         valid_winners = df_races[df_races['Winner'] != 'TBC']['Winner'].nunique()
         m2.metric("WINNERS", valid_winners)
-        m3.metric("STATUS", "OFFICIAL")
+        # 修改：Status 改為 COMPLETED
+        m3.metric("STATUS", "COMPLETED")
         
         st.markdown("---")
-        # 簡化後的表格：只顯示分站冠軍
         st.dataframe(df_races[['Round', 'Grand Prix', 'Date', 'Winner']],
                      use_container_width=True, hide_index=True)
 
-# 6. CSS
+# 6. CSS 高級定制
 st.markdown("""
     <style>
     .stApp { background-color: #15151e; color: #ffffff; }
     [data-testid="stSidebar"] { background-color: #1f1f27; }
     [data-testid="stMetricValue"] { color: #e10600 !important; font-family: 'Courier New', monospace; }
+    
+    /* 表格標頭：紅底白字 */
     .stDataFrame thead tr th {
         background-color: #e10600 !important;
         color: white !important;
         font-weight: bold !important;
     }
+    
     .stDataFrame td { font-size: 14px; }
     .block-container { padding-top: 2rem; }
     </style>
