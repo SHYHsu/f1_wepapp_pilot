@@ -37,45 +37,47 @@ def get_driver_standings(year):
 
 @st.cache_data(show_spinner=False)
 def get_race_results(year):
-    # 使用結果端點，確保能抓到 P1/P2/P3
-    url = f"https://api.jolpi.ca/ergast/f1/{year}/results.json?limit=1000"
+    # 第一步：抓取全年度的賽程清單 (確保所有 GP 都出現)
+    schedule_url = f"https://api.jolpi.ca/ergast/f1/{year}.json?limit=1000"
+    # 第二步：抓取目前的比賽結果
+    results_url = f"https://api.jolpi.ca/ergast/f1/{year}/results.json?limit=1000"
+    
     try:
         headers = {'User-Agent': 'Mozilla/5.0'}
-        response = requests.get(url, timeout=10, headers=headers)
-        response.raise_for_status()
-        data = response.json()
-        races = data['MRData']['RaceTable']['Races']
+        # 獲取完整賽程
+        sched_res = requests.get(schedule_url, timeout=10, headers=headers).json()
+        all_races = sched_res['MRData']['RaceTable']['Races']
         
-        schedule_data = []
-        for r in races:
-            # 關鍵修正：確保 Results 讀取路徑與新 API 結構對齊
-            results_list = r.get('Results', [])
+        # 獲取已有的結果
+        res_res = requests.get(results_url, timeout=10, headers=headers).json()
+        results_data = res_res['MRData']['RaceTable']['Races']
+        # 建立一個 round 到 results 的對照表
+        results_map = {r['round']: r['Results'] for r in results_data}
+        
+        final_schedule = []
+        for r in all_races:
+            rnd = r['round']
+            res_list = results_map.get(rnd, [])
             
-            p1 = results_list[0]['Driver']['familyName'] if len(results_list) > 0 else "TBC"
-            p2 = results_list[1]['Driver']['familyName'] if len(results_list) > 1 else "TBC"
-            p3 = results_list[2]['Driver']['familyName'] if len(results_list) > 2 else "TBC"
+            p1 = res_list[0]['Driver']['familyName'] if len(res_list) > 0 else "TBC"
+            p2 = res_list[1]['Driver']['familyName'] if len(res_list) > 1 else "TBC"
+            p3 = res_list[2]['Driver']['familyName'] if len(res_list) > 2 else "TBC"
             
-            schedule_data.append({
-                "Round": int(r['round']),
+            final_schedule.append({
+                "Round": int(rnd),
                 "Grand Prix": r['raceName'].replace("Grand Prix", "GP"),
                 "Date": r['date'],
                 "P1": p1, "P2": p2, "P3": p3,
                 "lat": float(r['Circuit']['Location']['lat']),
                 "lon": float(r['Circuit']['Location']['long'])
             })
-        return pd.DataFrame(schedule_data)
+        return pd.DataFrame(final_schedule)
     except Exception:
         return None
 
-# 3. 側邊欄 UI (使用樣式化文字確保 100% 顯示)
-st.sidebar.markdown("""
-    <div style="background-color: #e10600; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
-        <h2 style="color: white; margin: 0; font-family: sans-serif; font-style: italic; text-align: center;">
-            F1 HUB
-        </h2>
-    </div>
-    """, unsafe_allow_html=True)
-
+# 3. 側邊欄 UI
+# 修正 F1 商標：使用與截圖一致的官方紅標 URL (穩定連結)
+st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/1024px-F1.svg.png", width=150)
 st.sidebar.title("CONTROL CENTER")
 selected_year = st.sidebar.selectbox("SEASON", list(range(2024, 2014, -1)))
 st.sidebar.markdown("---")
@@ -95,7 +97,7 @@ else:
         col1, col2 = st.columns([1, 2])
         
         with col1:
-            # 修正：轉換為 Lewis_Hamilton.png 格式
+            # 修正：精確對應 Lewis_Hamilton.png 格式 (Title_Case)
             parts = champ['DriverID'].replace('-', '_').split('_')
             formatted_id = "_".join([p.capitalize() for p in parts])
             img_path = f"img/{formatted_id}.png"
