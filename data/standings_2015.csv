@@ -1,0 +1,23 @@
+Rank,Driver,Nationality,DOB,Constructor,Points,Wins,DriverID
+1,Lewis Hamilton,BRITISH,1985-01-07,Mercedes,381,10,hamilton
+2,Nico Rosberg,GERMAN,1985-06-27,Mercedes,322,6,rosberg
+3,Sebastian Vettel,GERMAN,1987-07-03,Ferrari,278,3,vettel
+4,Kimi Räikkönen,FINNISH,1979-10-17,Ferrari,150,0,raikkonen
+5,Valtteri Bottas,FINNISH,1989-08-28,Williams,136,0,bottas
+6,Felipe Massa,BRAZILIAN,1981-04-25,Williams,121,0,massa
+7,Daniil Kvyat,RUSSIAN,1994-04-26,Red Bull,95,0,kvyat
+8,Daniel Ricciardo,AUSTRALIAN,1989-07-01,Red Bull,92,0,ricciardo
+9,Sergio Pérez,MEXICAN,1990-01-26,Force India,78,0,perez
+10,Nico Hülkenberg,GERMAN,1987-08-19,Force India,58,0,hulkenberg
+11,Romain Grosjean,FRENCH,1986-04-17,Lotus F1,51,0,grosjean
+12,Max Verstappen,DUTCH,1997-09-30,Toro Rosso,49,0,max_verstappen
+13,Felipe Nasr,BRAZILIAN,1992-08-21,Sauber,27,0,nasr
+14,Pastor Maldonado,VENEZUELAN,1985-03-09,Lotus F1,27,0,maldonado
+15,Carlos Sainz,SPANISH,1994-09-01,Toro Rosso,18,0,sainz
+16,Jenson Button,BRITISH,1980-01-19,McLaren,16,0,button
+17,Fernando Alonso,SPANISH,1981-07-29,McLaren,11,0,alonso
+18,Marcus Ericsson,SWEDISH,1990-09-02,Sauber,9,0,ericsson
+19,Roberto Merhi,SPANISH,1991-03-22,Manor Marussia,0,0,merhi
+20,Alexander Rossi,AMERICAN,1991-09-25,Manor Marussia,0,0,rossi
+21,Will Stevens,BRITISH,1991-06-28,Manor Marussia,0,0,stevens
+0,Kevin Magnussen,DANISH,1992-10-05,McLaren,0,0,kevin_magnussen

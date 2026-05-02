@@ -1,0 +1,23 @@
+Rank,Driver,Nationality,DOB,Constructor,Points,Wins,DriverID
+1,Max Verstappen,DUTCH,1997-09-30,Red Bull,454,15,max_verstappen
+2,Charles Leclerc,MONEGASQUE,1997-10-16,Ferrari,308,3,leclerc
+3,Sergio Pérez,MEXICAN,1990-01-26,Red Bull,305,2,perez
+4,George Russell,BRITISH,1998-02-15,Mercedes,275,1,russell
+5,Carlos Sainz,SPANISH,1994-09-01,Ferrari,246,1,sainz
+6,Lewis Hamilton,BRITISH,1985-01-07,Mercedes,240,0,hamilton
+7,Lando Norris,BRITISH,1999-11-13,McLaren,122,0,norris
+8,Esteban Ocon,FRENCH,1996-09-17,Alpine F1 Team,92,0,ocon
+9,Fernando Alonso,SPANISH,1981-07-29,Alpine F1 Team,81,0,alonso
+10,Valtteri Bottas,FINNISH,1989-08-28,Alfa Romeo,49,0,bottas
+11,Daniel Ricciardo,AUSTRALIAN,1989-07-01,McLaren,37,0,ricciardo
+12,Sebastian Vettel,GERMAN,1987-07-03,Aston Martin,37,0,vettel
+13,Kevin Magnussen,DANISH,1992-10-05,Haas F1 Team,25,0,kevin_magnussen
+14,Pierre Gasly,FRENCH,1996-02-07,AlphaTauri,23,0,gasly
+15,Lance Stroll,CANADIAN,1998-10-29,Aston Martin,18,0,stroll
+16,Mick Schumacher,GERMAN,1999-03-22,Haas F1 Team,12,0,mick_schumacher
+17,Yuki Tsunoda,JAPANESE,2000-05-11,AlphaTauri,12,0,tsunoda
+18,Guanyu Zhou,CHINESE,1999-05-30,Alfa Romeo,6,0,zhou
+19,Alexander Albon,THAI,1996-03-23,Williams,4,0,albon
+20,Nicholas Latifi,CANADIAN,1995-06-29,Williams,2,0,latifi
+21,Nyck de Vries,DUTCH,1995-02-06,Williams,2,0,de_vries
+22,Nico Hülkenberg,GERMAN,1987-08-19,Aston Martin,0,0,hulkenberg

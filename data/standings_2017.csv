@@ -1,0 +1,26 @@
+Rank,Driver,Nationality,DOB,Constructor,Points,Wins,DriverID
+1,Lewis Hamilton,BRITISH,1985-01-07,Mercedes,363,9,hamilton
+2,Sebastian Vettel,GERMAN,1987-07-03,Ferrari,317,5,vettel
+3,Valtteri Bottas,FINNISH,1989-08-28,Mercedes,305,3,bottas
+4,Kimi Räikkönen,FINNISH,1979-10-17,Ferrari,205,0,raikkonen
+5,Daniel Ricciardo,AUSTRALIAN,1989-07-01,Red Bull,200,1,ricciardo
+6,Max Verstappen,DUTCH,1997-09-30,Red Bull,168,2,max_verstappen
+7,Sergio Pérez,MEXICAN,1990-01-26,Force India,100,0,perez
+8,Esteban Ocon,FRENCH,1996-09-17,Force India,87,0,ocon
+9,Carlos Sainz,SPANISH,1994-09-01,Toro Rosso,54,0,sainz
+10,Nico Hülkenberg,GERMAN,1987-08-19,Renault,43,0,hulkenberg
+11,Felipe Massa,BRAZILIAN,1981-04-25,Williams,43,0,massa
+12,Lance Stroll,CANADIAN,1998-10-29,Williams,40,0,stroll
+13,Romain Grosjean,FRENCH,1986-04-17,Haas F1 Team,28,0,grosjean
+14,Kevin Magnussen,DANISH,1992-10-05,Haas F1 Team,19,0,kevin_magnussen
+15,Fernando Alonso,SPANISH,1981-07-29,McLaren,17,0,alonso
+16,Stoffel Vandoorne,BELGIAN,1992-03-26,McLaren,13,0,vandoorne
+17,Jolyon Palmer,BRITISH,1991-01-20,Renault,8,0,jolyon_palmer
+18,Pascal Wehrlein,GERMAN,1994-10-18,Sauber,5,0,wehrlein
+19,Daniil Kvyat,RUSSIAN,1994-04-26,Toro Rosso,5,0,kvyat
+20,Marcus Ericsson,SWEDISH,1990-09-02,Sauber,0,0,ericsson
+21,Pierre Gasly,FRENCH,1996-02-07,Toro Rosso,0,0,gasly
+22,Antonio Giovinazzi,ITALIAN,1993-12-14,Sauber,0,0,giovinazzi
+23,Brendon Hartley,NEW ZEALANDER,1989-11-10,Toro Rosso,0,0,brendon_hartley
+0,Jenson Button,BRITISH,1980-01-19,McLaren,0,0,button
+0,Paul di Resta,BRITISH,1986-04-16,Williams,0,0,resta

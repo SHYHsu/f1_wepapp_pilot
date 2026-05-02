@@ -1,0 +1,21 @@
+Rank,Driver,Nationality,DOB,Constructor,Points,Wins,DriverID
+1,Lewis Hamilton,BRITISH,1985-01-07,Mercedes,408,11,hamilton
+2,Sebastian Vettel,GERMAN,1987-07-03,Ferrari,320,5,vettel
+3,Kimi Räikkönen,FINNISH,1979-10-17,Ferrari,251,1,raikkonen
+4,Max Verstappen,DUTCH,1997-09-30,Red Bull,249,2,max_verstappen
+5,Valtteri Bottas,FINNISH,1989-08-28,Mercedes,247,0,bottas
+6,Daniel Ricciardo,AUSTRALIAN,1989-07-01,Red Bull,170,2,ricciardo
+7,Nico Hülkenberg,GERMAN,1987-08-19,Renault,69,0,hulkenberg
+8,Sergio Pérez,MEXICAN,1990-01-26,Force India,62,0,perez
+9,Kevin Magnussen,DANISH,1992-10-05,Haas F1 Team,56,0,kevin_magnussen
+10,Carlos Sainz,SPANISH,1994-09-01,Renault,53,0,sainz
+11,Fernando Alonso,SPANISH,1981-07-29,McLaren,50,0,alonso
+12,Esteban Ocon,FRENCH,1996-09-17,Force India,49,0,ocon
+13,Charles Leclerc,MONEGASQUE,1997-10-16,Sauber,39,0,leclerc
+14,Romain Grosjean,FRENCH,1986-04-17,Haas F1 Team,37,0,grosjean
+15,Pierre Gasly,FRENCH,1996-02-07,Toro Rosso,29,0,gasly
+16,Stoffel Vandoorne,BELGIAN,1992-03-26,McLaren,12,0,vandoorne
+17,Marcus Ericsson,SWEDISH,1990-09-02,Sauber,9,0,ericsson
+18,Lance Stroll,CANADIAN,1998-10-29,Williams,6,0,stroll
+19,Brendon Hartley,NEW ZEALANDER,1989-11-10,Toro Rosso,4,0,brendon_hartley
+20,Sergey Sirotkin,RUSSIAN,1995-08-27,Williams,1,0,sirotkin

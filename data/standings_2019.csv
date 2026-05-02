@@ -1,0 +1,21 @@
+Rank,Driver,Nationality,DOB,Constructor,Points,Wins,DriverID
+1,Lewis Hamilton,BRITISH,1985-01-07,Mercedes,413,11,hamilton
+2,Valtteri Bottas,FINNISH,1989-08-28,Mercedes,326,4,bottas
+3,Max Verstappen,DUTCH,1997-09-30,Red Bull,278,3,max_verstappen
+4,Charles Leclerc,MONEGASQUE,1997-10-16,Ferrari,264,2,leclerc
+5,Sebastian Vettel,GERMAN,1987-07-03,Ferrari,240,1,vettel
+6,Carlos Sainz,SPANISH,1994-09-01,McLaren,96,0,sainz
+7,Pierre Gasly,FRENCH,1996-02-07,Red Bull,95,0,gasly
+8,Alexander Albon,THAI,1996-03-23,Toro Rosso,92,0,albon
+9,Daniel Ricciardo,AUSTRALIAN,1989-07-01,Renault,54,0,ricciardo
+10,Sergio Pérez,MEXICAN,1990-01-26,Racing Point,52,0,perez
+11,Lando Norris,BRITISH,1999-11-13,McLaren,49,0,norris
+12,Kimi Räikkönen,FINNISH,1979-10-17,Alfa Romeo,43,0,raikkonen
+13,Daniil Kvyat,RUSSIAN,1994-04-26,Toro Rosso,37,0,kvyat
+14,Nico Hülkenberg,GERMAN,1987-08-19,Renault,37,0,hulkenberg
+15,Lance Stroll,CANADIAN,1998-10-29,Racing Point,21,0,stroll
+16,Kevin Magnussen,DANISH,1992-10-05,Haas F1 Team,20,0,kevin_magnussen
+17,Antonio Giovinazzi,ITALIAN,1993-12-14,Alfa Romeo,14,0,giovinazzi
+18,Romain Grosjean,FRENCH,1986-04-17,Haas F1 Team,8,0,grosjean
+19,Robert Kubica,POLISH,1984-12-07,Williams,1,0,kubica
+20,George Russell,BRITISH,1998-02-15,Williams,0,0,russell

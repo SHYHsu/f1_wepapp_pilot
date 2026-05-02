@@ -1,0 +1,25 @@
+Rank,Driver,Nationality,DOB,Constructor,Points,Wins,DriverID
+1,Nico Rosberg,GERMAN,1985-06-27,Mercedes,385,9,rosberg
+2,Lewis Hamilton,BRITISH,1985-01-07,Mercedes,380,10,hamilton
+3,Daniel Ricciardo,AUSTRALIAN,1989-07-01,Red Bull,256,1,ricciardo
+4,Sebastian Vettel,GERMAN,1987-07-03,Ferrari,212,0,vettel
+5,Max Verstappen,DUTCH,1997-09-30,Toro Rosso,204,1,max_verstappen
+6,Kimi Räikkönen,FINNISH,1979-10-17,Ferrari,186,0,raikkonen
+7,Sergio Pérez,MEXICAN,1990-01-26,Force India,101,0,perez
+8,Valtteri Bottas,FINNISH,1989-08-28,Williams,85,0,bottas
+9,Nico Hülkenberg,GERMAN,1987-08-19,Force India,72,0,hulkenberg
+10,Fernando Alonso,SPANISH,1981-07-29,McLaren,54,0,alonso
+11,Felipe Massa,BRAZILIAN,1981-04-25,Williams,53,0,massa
+12,Carlos Sainz,SPANISH,1994-09-01,Toro Rosso,46,0,sainz
+13,Romain Grosjean,FRENCH,1986-04-17,Haas F1 Team,29,0,grosjean
+14,Daniil Kvyat,RUSSIAN,1994-04-26,Red Bull,25,0,kvyat
+15,Jenson Button,BRITISH,1980-01-19,McLaren,21,0,button
+16,Kevin Magnussen,DANISH,1992-10-05,Renault,7,0,kevin_magnussen
+17,Felipe Nasr,BRAZILIAN,1992-08-21,Sauber,2,0,nasr
+18,Jolyon Palmer,BRITISH,1991-01-20,Renault,1,0,jolyon_palmer
+19,Pascal Wehrlein,GERMAN,1994-10-18,Manor Marussia,1,0,wehrlein
+20,Stoffel Vandoorne,BELGIAN,1992-03-26,McLaren,1,0,vandoorne
+21,Esteban Gutiérrez,MEXICAN,1991-08-05,Haas F1 Team,0,0,gutierrez
+22,Marcus Ericsson,SWEDISH,1990-09-02,Sauber,0,0,ericsson
+23,Esteban Ocon,FRENCH,1996-09-17,Manor Marussia,0,0,ocon
+24,Rio Haryanto,INDONESIAN,1993-01-22,Manor Marussia,0,0,haryanto

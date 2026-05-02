@@ -1,0 +1,22 @@
+Rank,Driver,Nationality,DOB,Constructor,Points,Wins,DriverID
+1,Max Verstappen,DUTCH,1997-09-30,Red Bull,395,10,max_verstappen
+2,Lewis Hamilton,BRITISH,1985-01-07,Mercedes,387,8,hamilton
+3,Valtteri Bottas,FINNISH,1989-08-28,Mercedes,226,1,bottas
+4,Sergio Pérez,MEXICAN,1990-01-26,Red Bull,190,1,perez
+5,Carlos Sainz,SPANISH,1994-09-01,Ferrari,164,0,sainz
+6,Lando Norris,BRITISH,1999-11-13,McLaren,160,0,norris
+7,Charles Leclerc,MONEGASQUE,1997-10-16,Ferrari,159,0,leclerc
+8,Daniel Ricciardo,AUSTRALIAN,1989-07-01,McLaren,115,1,ricciardo
+9,Pierre Gasly,FRENCH,1996-02-07,AlphaTauri,110,0,gasly
+10,Fernando Alonso,SPANISH,1981-07-29,Alpine F1 Team,81,0,alonso
+11,Esteban Ocon,FRENCH,1996-09-17,Alpine F1 Team,74,1,ocon
+12,Sebastian Vettel,GERMAN,1987-07-03,Aston Martin,43,0,vettel
+13,Lance Stroll,CANADIAN,1998-10-29,Aston Martin,34,0,stroll
+14,Yuki Tsunoda,JAPANESE,2000-05-11,AlphaTauri,32,0,tsunoda
+15,George Russell,BRITISH,1998-02-15,Williams,16,0,russell
+16,Kimi Räikkönen,FINNISH,1979-10-17,Alfa Romeo,10,0,raikkonen
+17,Nicholas Latifi,CANADIAN,1995-06-29,Williams,7,0,latifi
+18,Antonio Giovinazzi,ITALIAN,1993-12-14,Alfa Romeo,3,0,giovinazzi
+19,Mick Schumacher,GERMAN,1999-03-22,Haas F1 Team,0,0,mick_schumacher
+20,Robert Kubica,POLISH,1984-12-07,Alfa Romeo,0,0,kubica
+21,Nikita Mazepin,RUSSIAN,1999-03-02,Haas F1 Team,0,0,mazepin

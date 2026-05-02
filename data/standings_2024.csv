@@ -1,0 +1,25 @@
+Rank,Driver,Nationality,DOB,Constructor,Points,Wins,DriverID
+1,Max Verstappen,DUTCH,1997-09-30,Red Bull,437,9,max_verstappen
+2,Lando Norris,BRITISH,1999-11-13,McLaren,374,4,norris
+3,Charles Leclerc,MONEGASQUE,1997-10-16,Ferrari,356,3,leclerc
+4,Oscar Piastri,AUSTRALIAN,2001-04-06,McLaren,292,2,piastri
+5,Carlos Sainz,SPANISH,1994-09-01,Ferrari,290,2,sainz
+6,George Russell,BRITISH,1998-02-15,Mercedes,245,2,russell
+7,Lewis Hamilton,BRITISH,1985-01-07,Mercedes,223,2,hamilton
+8,Sergio Pérez,MEXICAN,1990-01-26,Red Bull,152,0,perez
+9,Fernando Alonso,SPANISH,1981-07-29,Aston Martin,70,0,alonso
+10,Pierre Gasly,FRENCH,1996-02-07,Alpine F1 Team,42,0,gasly
+11,Nico Hülkenberg,GERMAN,1987-08-19,Haas F1 Team,41,0,hulkenberg
+12,Yuki Tsunoda,JAPANESE,2000-05-11,RB F1 Team,30,0,tsunoda
+13,Lance Stroll,CANADIAN,1998-10-29,Aston Martin,24,0,stroll
+14,Esteban Ocon,FRENCH,1996-09-17,Alpine F1 Team,23,0,ocon
+15,Kevin Magnussen,DANISH,1992-10-05,Haas F1 Team,16,0,kevin_magnussen
+16,Alexander Albon,THAI,1996-03-23,Williams,12,0,albon
+17,Daniel Ricciardo,AUSTRALIAN,1989-07-01,RB F1 Team,12,0,ricciardo
+18,Oliver Bearman,BRITISH,2005-05-08,Ferrari,7,0,bearman
+19,Franco Colapinto,ARGENTINE,2003-05-27,Williams,5,0,colapinto
+20,Guanyu Zhou,CHINESE,1999-05-30,Sauber,4,0,zhou
+21,Liam Lawson,NEW ZEALANDER,2002-02-11,RB F1 Team,4,0,lawson
+22,Valtteri Bottas,FINNISH,1989-08-28,Sauber,0,0,bottas
+23,Logan Sargeant,AMERICAN,2000-12-31,Williams,0,0,sargeant
+24,Jack Doohan,AUSTRALIAN,2003-01-20,Alpine F1 Team,0,0,doohan
