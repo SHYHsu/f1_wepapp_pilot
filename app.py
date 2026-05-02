@@ -3,18 +3,20 @@ import pandas as pd
 import requests
 import plotly.express as px
 
-# 1. 頁面基本設定 (必須在最前面)
+# 1. 頁面基本設定
 st.set_page_config(page_title="F1 DATA HUB", layout="wide")
 
-# 2. 數據抓取函數 (加強版防錯)
+# 2. 數據抓取函數 (更新為 api.jolpi.ca 新網址)
 @st.cache_data(show_spinner="Fetching data from API...")
 def get_driver_standings(year):
-    url = f"[https://api.jolpi.ca/ergast/f1/](https://api.jolpi.ca/ergast/f1/){year}/driverStandings.json"
+    # 新網域路徑，且 driverstandings 改為全小寫
+    url = f"https://api.jolpi.ca/ergast/f1/{year}/driverstandings.json"
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
         response = requests.get(url, timeout=10, headers=headers)
         response.raise_for_status()
         data = response.json()
+        # 解析路徑保持一致
         standings = data['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
         
         processed_data = []
@@ -33,7 +35,8 @@ def get_driver_standings(year):
 
 @st.cache_data(show_spinner="Loading race results...")
 def get_race_results(year):
-    url = f"[https://api.jolpi.ca/ergast/f1/](https://api.jolpi.ca/ergast/f1/){year}/results.json?limit=1000"
+    # 更新為新網域路徑
+    url = f"https://api.jolpi.ca/ergast/f1/{year}/results.json?limit=1000"
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
         response = requests.get(url, timeout=10, headers=headers)
@@ -61,7 +64,7 @@ def get_race_results(year):
     except Exception as e:
         return None
 
-# 3. 側邊欄 UI (優先渲染)
+# 3. 側邊欄 UI
 st.sidebar.title("F1 CONTROL CENTER")
 selected_year = st.sidebar.selectbox("SEASON", list(range(2024, 2014, -1)))
 st.sidebar.markdown("---")
@@ -74,14 +77,16 @@ df_races = get_race_results(selected_year)
 # 5. 頁面邏輯
 if df_drivers is None or df_races is None:
     st.error("DATABASE CONNECTION ERROR: Please refresh the page or try again later.")
-    st.info("The F1 API server might be temporarily unavailable.")
+    st.info("The F1 API server might be temporarily unavailable or domain has changed.")
 else:
     if nav_option == "SEASON OVERVIEW":
         st.title(f"{selected_year} SEASON OVERVIEW")
         
+        # 年度冠軍精選
         champ = df_drivers.iloc[0]
         col1, col2 = st.columns([1, 2])
         with col1:
+            # 處理 DriverID 中的連字號以匹配圖片檔名
             img_path = f"img/{champ['DriverID'].replace('-', '_')}.png"
             try:
                 st.image(img_path, use_container_width=True)
@@ -113,31 +118,22 @@ else:
         m1.metric("TOTAL ROUNDS", len(df_races))
         m2.metric("UNIQUE WINNERS", df_races['P1'].nunique())
         m3.metric("STATUS", "COMPLETED")
+        
         st.markdown("---")
         st.subheader("PODIUM FINISHERS")
         st.dataframe(df_races[['Round', 'Grand Prix', 'Date', 'P1', 'P2', 'P3']],
                      use_container_width=True, hide_index=True)
 
-# 6. CSS (最後載入)
+# 6. CSS 視覺優化
 st.markdown("""
     <style>
-    /* 全域背景與文字顏色 */
     .stApp { background-color: #15151e; color: #ffffff; }
-    
-    /* 數據指標 (Metric) 的紅色數值與字體 */
     [data-testid="stMetricValue"] { color: #e10600 !important; font-family: monospace; }
-    
-    /* 側邊欄背景色 */
     [data-testid="stSidebar"] { background-color: #1f1f27; }
-    
-    /* 新增：讓表格標頭 (Header) 變成紅色背景、白色文字 */
+    /* 表格標頭紅色風格 */
     thead tr th { 
         background-color: #e10600 !important; 
         color: white !important; 
-        font-family: sans-serif;
     }
-    
-    /* 讓表格內部的文字在深色背景下更清晰 */
-    [data-testid="stTable"] { color: #ffffff; }
     </style>
     """, unsafe_allow_html=True)
