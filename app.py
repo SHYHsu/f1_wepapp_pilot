@@ -37,27 +37,26 @@ def get_driver_standings(year):
 
 @st.cache_data(show_spinner=False)
 def get_race_results(year):
-    # 同時嘗試獲取 results (含成績) 與 races (含完整賽程)
-    url = f"https://api.jolpi.ca/ergast/f1/{year}.json?limit=1000"
+    # 使用結果端點，確保能抓到 P1/P2/P3
+    url = f"https://api.jolpi.ca/ergast/f1/{year}/results.json?limit=1000"
     try:
         headers = {'User-Agent': 'Mozilla/5.0'}
-        res_all = requests.get(url, timeout=10, headers=headers).json()
-        races_list = res_all['MRData']['RaceTable']['Races']
-        
-        # 再抓取有成績的資料進行合併
-        res_results = requests.get(f"https://api.jolpi.ca/ergast/f1/{year}/results.json?limit=1000", headers=headers).json()
-        results_map = {r['round']: r['Results'] for r in res_results['MRData']['RaceTable']['Races']}
+        response = requests.get(url, timeout=10, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        races = data['MRData']['RaceTable']['Races']
         
         schedule_data = []
-        for r in races_list:
-            rnd = r['round']
-            results = results_map.get(rnd, [])
-            p1 = results[0]['Driver']['familyName'] if len(results) > 0 else "-"
-            p2 = results[1]['Driver']['familyName'] if len(results) > 1 else "-"
-            p3 = results[2]['Driver']['familyName'] if len(results) > 2 else "-"
+        for r in races:
+            # 關鍵修正：確保 Results 讀取路徑與新 API 結構對齊
+            results_list = r.get('Results', [])
+            
+            p1 = results_list[0]['Driver']['familyName'] if len(results_list) > 0 else "TBC"
+            p2 = results_list[1]['Driver']['familyName'] if len(results_list) > 1 else "TBC"
+            p3 = results_list[2]['Driver']['familyName'] if len(results_list) > 2 else "TBC"
             
             schedule_data.append({
-                "Round": int(rnd),
+                "Round": int(r['round']),
                 "Grand Prix": r['raceName'].replace("Grand Prix", "GP"),
                 "Date": r['date'],
                 "P1": p1, "P2": p2, "P3": p3,
@@ -68,9 +67,15 @@ def get_race_results(year):
     except Exception:
         return None
 
-# 3. 側邊欄 UI
-# 補回 F1 官方圖標 (使用維基百科穩定連結)
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/640px-F1.svg.png", width=150)
+# 3. 側邊欄 UI (使用樣式化文字確保 100% 顯示)
+st.sidebar.markdown("""
+    <div style="background-color: #e10600; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+        <h2 style="color: white; margin: 0; font-family: sans-serif; font-style: italic; text-align: center;">
+            F1 HUB
+        </h2>
+    </div>
+    """, unsafe_allow_html=True)
+
 st.sidebar.title("CONTROL CENTER")
 selected_year = st.sidebar.selectbox("SEASON", list(range(2024, 2014, -1)))
 st.sidebar.markdown("---")
@@ -82,7 +87,7 @@ df_races = get_race_results(selected_year)
 
 # 5. 頁面邏輯
 if df_drivers is None or df_races is None:
-    st.error("DATABASE CONNECTION ERROR: Please refresh the page.")
+    st.error("DATABASE CONNECTION ERROR: Please refresh or select another year.")
 else:
     if nav_option == "SEASON OVERVIEW":
         st.title(f"{selected_year} SEASON OVERVIEW")
@@ -90,16 +95,15 @@ else:
         col1, col2 = st.columns([1, 2])
         
         with col1:
-            # 修正：精確匹配 Lewis_Hamilton.png 格式
-            # 邏輯：將 driverId (lewis_hamilton) 轉為 Title Case 並連接底線
-            name_parts = champ['DriverID'].replace('-', '_').split('_')
-            formatted_id = "_".join([p.capitalize() for p in name_parts])
+            # 修正：轉換為 Lewis_Hamilton.png 格式
+            parts = champ['DriverID'].replace('-', '_').split('_')
+            formatted_id = "_".join([p.capitalize() for p in parts])
             img_path = f"img/{formatted_id}.png"
             
             try:
                 st.image(img_path, use_container_width=True)
             except:
-                st.caption(f"IMAGE: {champ['Driver'].upper()}")
+                st.info(f"PHOTO: {champ['Driver'].upper()}")
 
         with col2:
             st.caption("SEASON CHAMPION")
@@ -130,13 +134,15 @@ else:
         st.title(f"{selected_year} CALENDAR & RESULTS")
         m1, m2, m3 = st.columns(3)
         m1.metric("ROUNDS", len(df_races))
-        m2.metric("WINNERS", df_races[df_races['P1'] != '-']['P1'].nunique())
+        valid_winners = df_races[df_races['P1'] != 'TBC']['P1'].nunique()
+        m2.metric("WINNERS", valid_winners)
         m3.metric("STATUS", "OFFICIAL")
+        
         st.markdown("---")
         st.dataframe(df_races[['Round', 'Grand Prix', 'Date', 'P1', 'P2', 'P3']],
                      use_container_width=True, hide_index=True)
 
-# 6. CSS (紅底白字標題列)
+# 6. CSS (標題列紅底白字)
 st.markdown("""
     <style>
     .stApp { background-color: #15151e; color: #ffffff; }
