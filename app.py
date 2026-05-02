@@ -3,17 +3,17 @@ import pandas as pd
 import requests
 import plotly.express as px
 from datetime import datetime
+import os
 
-# 1. 頁面基本設定
 st.set_page_config(page_title="F1 DATA HUB", layout="wide")
 
-# 2. 數據抓取函數
+# 數據抓取函數
 @st.cache_data(show_spinner=False)
 def get_driver_standings(year):
     url = f"https://api.jolpi.ca/ergast/f1/{year}/driverstandings.json"
     try:
         headers = {'User-Agent': 'Mozilla/5.0'}
-        response = requests.get(url, timeout=10, headers=headers)
+        response = requests.get(url, timeout=5, headers=headers)
         response.raise_for_status()
         data = response.json()
         standings = data['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
@@ -31,92 +31,93 @@ def get_driver_standings(year):
                 "Wins": int(item['wins']),
                 "DriverID": driver['driverId']
             })
-        return pd.DataFrame(processed_data)
+        df = pd.DataFrame(processed_data)
+        # 自動存檔備份：確保 data 資料夾存在
+        if not os.path.exists("data"): os.makedirs("data")
+        df.to_csv(f"data/standings_{year}.csv", index=False)
+        return df, "LIVE"
     except Exception:
-        return None
+        fallback_path = f"data/standings_{year}.csv"
+        if os.path.exists(fallback_path):
+            return pd.read_csv(fallback_path), "OFFLINE"
+        return None, "ERROR"
 
 @st.cache_data(show_spinner=False)
 def get_race_results(year):
-    # 第一步：抓取全年度賽程清單
     schedule_url = f"https://api.jolpi.ca/ergast/f1/{year}.json?limit=1000"
-    # 第二步：僅抓取分站冠軍 (results/1.json)
     results_url = f"https://api.jolpi.ca/ergast/f1/{year}/results/1.json?limit=1000"
-    
     try:
         headers = {'User-Agent': 'Mozilla/5.0'}
-        sched_res = requests.get(schedule_url, timeout=10, headers=headers).json()
+        sched_res = requests.get(schedule_url, timeout=5, headers=headers).json()
         all_races = sched_res['MRData']['RaceTable']['Races']
-        
-        res_res = requests.get(results_url, timeout=10, headers=headers).json()
+        res_res = requests.get(results_url, timeout=5, headers=headers).json()
         results_data = res_res['MRData']['RaceTable']['Races']
         winner_map = {r['round']: r['Results'][0]['Driver']['familyName'] for r in results_data if r.get('Results')}
         
         final_schedule = []
         for r in all_races:
             rnd = r['round']
-            winner = winner_map.get(rnd, "TBC")
-            
             final_schedule.append({
-                "Round": int(rnd),
-                "Grand Prix": r['raceName'].replace("Grand Prix", "GP"),
-                "Date": r['date'],
-                "Winner": winner,
-                "lat": float(r['Circuit']['Location']['lat']),
-                "long": float(r['Circuit']['Location']['long'])
+                "Round": int(rnd), "Grand Prix": r['raceName'].replace("Grand Prix", "GP"),
+                "Date": r['date'], "Winner": winner_map.get(rnd, "TBC"),
+                "lat": float(r['Circuit']['Location']['lat']), "long": float(r['Circuit']['Location']['long'])
             })
-        return pd.DataFrame(final_schedule)
+        df = pd.DataFrame(final_schedule)
+        # 自動存檔備份
+        if not os.path.exists("data"): os.makedirs("data")
+        df.to_csv(f"data/results_{year}.csv", index=False)
+        return df, "LIVE"
     except Exception:
-        return None
+        fallback_path = f"data/results_{year}.csv"
+        if os.path.exists(fallback_path):
+            return pd.read_csv(fallback_path), "OFFLINE"
+        return None, "ERROR"
 
-# 3. 側邊欄 UI
-# 解決鋸齒狀並對齊寬度：使用 CSS 注入
+# 側邊欄
 st.sidebar.markdown(
-    """
-    <div style="text-align: left;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" 
-             style="width: 100%; max-width: 250px; image-rendering: -webkit-optimize-contrast; margin-bottom: 20px;">
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
-
+    """<div style="text-align: left;"><img src="https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg" 
+    style="width: 100%; max-width: 250px; image-rendering: -webkit-optimize-contrast; margin-bottom: 20px;"></div>""", 
+    unsafe_allow_html=True)
 st.sidebar.title("CONTROL CENTER")
 selected_year = st.sidebar.selectbox("SEASON", list(range(2024, 2014, -1)))
 st.sidebar.markdown("---")
 nav_option = st.sidebar.radio("NAVIGATION", ["SEASON OVERVIEW", "RACE RESULTS"])
 
-# 4. 數據獲取
-df_drivers = get_driver_standings(selected_year)
-df_races = get_race_results(selected_year)
+df_drivers, d_status = get_driver_standings(selected_year)
+df_races, r_status = get_race_results(selected_year)
 
-# 5. 頁面邏輯
 if df_drivers is None or df_races is None:
-    st.error("DATABASE CONNECTION ERROR: Please refresh or select another year.")
+    st.error("DATABASE CONNECTION ERROR: No live data or local backup found.")
 else:
+    if d_status == "OFFLINE":
+        st.warning(f"⚠️ OFFLINE MODE: Showing cached data for {selected_year}.")
+
     if nav_option == "SEASON OVERVIEW":
         st.title(f"{selected_year} SEASON OVERVIEW")
         champ = df_drivers.iloc[0]
         col1, col2 = st.columns([1, 2])
         
         with col1:
-            # 照片匹配邏輯：Title_Case (例如 Lewis_Hamilton.png)
-            name_parts = champ['DriverID'].replace('-', '_').split('_')
-            formatted_id = "_".join([p.capitalize() for p in name_parts])
-            img_path = f"img/{formatted_id}.png"
+            # 針對 Lewis_Hamilton.png 與 Nico_Rosberg.png 的精確匹配
+            d_id = champ['DriverID']
+            # 將 ID (如 lewis_hamilton) 轉為 Title_Case (Lewis_Hamilton)
+            formatted_name = "_".join([p.capitalize() for p in d_id.replace('-', '_').split('_')])
             
-            try:
+            img_path = f"img/{formatted_name}.png"
+            if os.path.exists(img_path):
                 st.image(img_path, use_container_width=True)
-            except:
-                st.caption(f"IMAGE: {champ['Driver'].upper()}")
+            else:
+                st.info(f"PHOTO: {champ['Driver'].upper()}")
 
         with col2:
             st.caption("SEASON CHAMPION")
             st.header(champ['Driver'].upper())
-            birth_year = datetime.strptime(champ['DOB'], '%Y-%m-%d').year
-            st.markdown(f"**{champ['Nationality']}** | BORN {birth_year}")
-            
+            try:
+                birth_year = datetime.strptime(str(champ['DOB']), '%Y-%m-%d').year
+                st.markdown(f"**{champ['Nationality']}** | BORN {birth_year}")
+            except:
+                st.markdown(f"**{champ['Nationality']}**")
             m1, m2 = st.columns(2)
-            # 純數字顯示
             m1.metric("POINTS", champ['Points'])
             m2.metric("WINS", champ['Wins'])
             st.write(f"**CONSTRUCTOR:** {champ['Constructor']}")
@@ -139,30 +140,17 @@ else:
         st.title(f"{selected_year} CALENDAR & RESULTS")
         m1, m2, m3 = st.columns(3)
         m1.metric("ROUNDS", len(df_races))
-        valid_winners = df_races[df_races['Winner'] != 'TBC']['Winner'].nunique()
-        m2.metric("WINNERS", valid_winners)
-        # 修改：Status 改為 COMPLETED
+        m2.metric("WINNERS", df_races[df_races['Winner'] != 'TBC']['Winner'].nunique())
         m3.metric("STATUS", "COMPLETED")
-        
         st.markdown("---")
         st.dataframe(df_races[['Round', 'Grand Prix', 'Date', 'Winner']],
                      use_container_width=True, hide_index=True)
 
-# 6. CSS 高級定制
-st.markdown("""
-    <style>
+st.markdown("""<style>
     .stApp { background-color: #15151e; color: #ffffff; }
     [data-testid="stSidebar"] { background-color: #1f1f27; }
     [data-testid="stMetricValue"] { color: #e10600 !important; font-family: 'Courier New', monospace; }
-    
-    /* 表格標頭：紅底白字 */
-    .stDataFrame thead tr th {
-        background-color: #e10600 !important;
-        color: white !important;
-        font-weight: bold !important;
-    }
-    
+    .stDataFrame thead tr th { background-color: #e10600 !important; color: white !important; font-weight: bold !important; }
     .stDataFrame td { font-size: 14px; }
     .block-container { padding-top: 2rem; }
-    </style>
-    """, unsafe_allow_html=True)
+    </style>""", unsafe_allow_html=True)
