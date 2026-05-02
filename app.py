@@ -121,8 +121,23 @@ else:
 # 6. CSS (最後載入)
 st.markdown("""
     <style>
+    /* 全域背景與文字顏色 */
     .stApp { background-color: #15151e; color: #ffffff; }
+    
+    /* 數據指標 (Metric) 的紅色數值與字體 */
     [data-testid="stMetricValue"] { color: #e10600 !important; font-family: monospace; }
+    
+    /* 側邊欄背景色 */
     [data-testid="stSidebar"] { background-color: #1f1f27; }
+    
+    /* 新增：讓表格標頭 (Header) 變成紅色背景、白色文字 */
+    thead tr th { 
+        background-color: #e10600 !important; 
+        color: white !important; 
+        font-family: sans-serif;
+    }
+    
+    /* 讓表格內部的文字在深色背景下更清晰 */
+    [data-testid="stTable"] { color: #ffffff; }
     </style>
     """, unsafe_allow_html=True)
