@@ -35,7 +35,8 @@ def get_driver_standings(year):
 def get_race_results(year):
     url = f"https://jolpica.net/api/f1/{year}/results.json?limit=1000"
     try:
-        response = requests.get(url, timeout=5)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+        response = requests.get(url, timeout=10, headers=headers)
         response.raise_for_status()
         data = response.json()
         races = data['MRData']['RaceTable']['Races']
