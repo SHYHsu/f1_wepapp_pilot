@@ -11,7 +11,8 @@ st.set_page_config(page_title="F1 DATA HUB", layout="wide")
 def get_driver_standings(year):
     url = f"https://jolpica.net/api/f1/{year}/driverStandings.json"
     try:
-        response = requests.get(url, timeout=5) # 縮短 timeout 快速回傳
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+        response = requests.get(url, timeout=10, headers=headers)
         response.raise_for_status()
         data = response.json()
         standings = data['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
