@@ -9,7 +9,7 @@ st.set_page_config(page_title="F1 DATA HUB", layout="wide")
 # 2. 數據抓取函數 (加強版防錯)
 @st.cache_data(show_spinner="Fetching data from API...")
 def get_driver_standings(year):
-    url = f"https://jolpica.net/api/f1/{year}/driverStandings.json"
+    url = f"[https://api.jolpi.ca/ergast/f1/](https://api.jolpi.ca/ergast/f1/){year}/driverStandings.json"
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
         response = requests.get(url, timeout=10, headers=headers)
@@ -33,7 +33,7 @@ def get_driver_standings(year):
 
 @st.cache_data(show_spinner="Loading race results...")
 def get_race_results(year):
-    url = f"https://jolpica.net/api/f1/{year}/results.json?limit=1000"
+    url = f"[https://api.jolpi.ca/ergast/f1/](https://api.jolpi.ca/ergast/f1/){year}/results.json?limit=1000"
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
         response = requests.get(url, timeout=10, headers=headers)
