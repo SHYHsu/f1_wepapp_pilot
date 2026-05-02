@@ -1,149 +1,143 @@
 import streamlit as st
-import requests
 import pandas as pd
-import os
+import requests
 import plotly.express as px
 
-# 1. 網頁基礎配置
-st.set_page_config(page_title="2015-2024 F1 Overview", page_icon="🏎️", layout="wide")
+# 頁面基本設定
+st.set_page_config(page_title="F1 Data Hub 2015-2024", layout="wide")
 
-# 2. CSS 樣式：專業極簡紅黑風格
+# --- 1. 數據抓取函數 ---
+@st.cache_data
+def get_driver_standings(year):
+    url = f"https://jolpica.net/api/f1/{year}/driverStandings.json"
+    response = requests.get(url)
+    data = response.json()
+    standings = data['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
+    
+    processed_data = []
+    for item in standings:
+        processed_data.append({
+            "Rank": int(item['position']),
+            "Driver": f"{item['Driver']['givenName']} {item['Driver']['familyName']}",
+            "Constructor": item['Constructors'][0]['name'],
+            "Points": float(item['points']),
+            "Wins": int(item['wins']),
+            "Nationality": item['Driver']['nationality'],
+            "DOB": item['Driver']['dateOfBirth'],
+            "DriverID": item['Driver']['driverId']
+        })
+    return pd.DataFrame(processed_data)
+
+@st.cache_data
+def get_race_results(year):
+    url = f"https://jolpica.net/api/f1/{year}/results.json?limit=1000"
+    response = requests.get(url)
+    data = response.json()
+    races = data['MRData']['RaceTable']['Races']
+    
+    schedule_data = []
+    for r in races:
+        results = r['Results'][:3]
+        p1 = results[0]['Driver']['familyName'] if len(results) > 0 else "-"
+        p2 = results[1]['Driver']['familyName'] if len(results) > 1 else "-"
+        p3 = results[2]['Driver']['familyName'] if len(results) > 2 else "-"
+        
+        schedule_data.append({
+            "Round": int(r['round']),
+            "Grand Prix": r['raceName'].replace("Grand Prix", "GP"),
+            "Date": r['date'],
+            "P1": p1,
+            "P2": p2,
+            "P3": p3,
+            "lat": float(r['Circuit']['Location']['lat']),
+            "lon": float(r['Circuit']['Location']['long']),
+            "Loc": r['Circuit']['Location']['locality']
+        })
+    return pd.DataFrame(schedule_data)
+
+# --- 2. 側邊欄設定 ---
+st.sidebar.title("F1 CONTROL CENTER")
+selected_year = st.sidebar.selectbox("SEASON", list(range(2024, 2014, -1)))
+st.sidebar.markdown("---")
+nav_option = st.sidebar.radio("NAVIGATION", ["SEASON OVERVIEW", "RACE RESULTS"])
+
+# 預先抓取數據
+df_drivers = get_driver_standings(selected_year)
+df_races = get_race_results(selected_year)
+
+# --- 3. 頁面邏輯：年度總覽 ---
+if nav_option == "SEASON OVERVIEW":
+    st.title(f"{selected_year} SEASON OVERVIEW")
+    
+    champ = df_drivers.iloc[0]
+    col1, col2 = st.columns([1, 2])
+    
+    with col1:
+        img_path = f"img/{champ['DriverID'].replace('-', '_')}.png"
+        try:
+            st.image(img_path, use_container_width=True)
+        except:
+            st.info(f"Image for {champ['Driver']} not found")
+            
+    with col2:
+        st.caption("WORLD CHAMPION")
+        st.header(champ['Driver'].upper())
+        st.metric("TOTAL POINTS", f"{champ['Points']} PTS")
+        st.write(f"**CONSTRUCTOR:** {champ['Constructor']}")
+        st.write(f"**NATIONALITY:** {champ['Nationality']}")
+        st.progress(1.0)
+
+    st.markdown("---")
+    
+    c_left, c_right = st.columns([1, 1])
+    with c_left:
+        st.subheader("DRIVER STANDINGS")
+        st.dataframe(df_drivers[['Rank', 'Driver', 'Constructor', 'Points', 'Wins']], 
+                     hide_index=True, use_container_width=True)
+    
+    with c_right:
+        st.subheader("CIRCUIT LOCATIONS")
+        fig = px.scatter_mapbox(df_races, lat="lat", lon="lon", hover_name="Grand Prix",
+                                hover_data=["Loc", "Date"], zoom=0.5, height=400)
+        fig.update_layout(mapbox_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0})
+        st.plotly_chart(fig, use_container_width=True)
+
+# --- 4. 頁面邏輯：分站賽程與成績 ---
+elif nav_option == "RACE RESULTS":
+    st.title(f"{selected_year} CALENDAR & RESULTS")
+    
+    total_races = len(df_races)
+    unique_winners = df_races['P1'].nunique()
+    
+    m1, m2, m3 = st.columns(3)
+    m1.metric("TOTAL ROUNDS", f"{total_races}")
+    m2.metric("UNIQUE WINNERS", f"{unique_winners}")
+    m3.metric("STATUS", "COMPLETED")
+
+    st.markdown("---")
+    
+    st.subheader("PODIUM FINISHERS BY ROUND")
+    st.dataframe(
+        df_races[['Round', 'Grand Prix', 'Date', 'P1', 'P2', 'P3']],
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "Round": st.column_config.NumberColumn("RD"),
+            "Date": st.column_config.DateColumn("DATE"),
+            "P1": "WINNER",
+            "P2": "SECOND",
+            "P3": "THIRD"
+        }
+    )
+    st.caption(f"Source: Jolpica/Ergast F1 API | Last Data: {df_races.iloc[-1]['Date']}")
+
+# --- 5. 強制俐落配色 CSS ---
 st.markdown("""
     <style>
-    .main { background-color: #15151e; }
-    [data-testid="stMetric"] {
-        background-color: #1f1f27;
-        padding: 20px;
-        border-radius: 4px;
-        border-left: 4px solid #e10600;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.4);
-    }
-    [data-testid="stSidebar"] {
-        background-color: #1f1f27;
-    }
-    h1, h2, h3 {
-        color: #ffffff;
-        font-family: 'Titillium Web', sans-serif;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
+    .stApp { background-color: #15151e; color: #ffffff; }
+    [data-testid="stMetricValue"] { color: #e10600 !important; font-family: monospace; }
+    [data-testid="stSidebar"] { background-color: #1f1f27; }
+    .stDataFrame { border: 1px solid #38383f; }
+    h1, h2, h3 { letter-spacing: -0.5px; }
     </style>
     """, unsafe_allow_html=True)
-
-# 3. 側邊欄配置
-st.sidebar.image("https://logodownload.org/wp-content/uploads/2016/11/formula-1-logo-7.png", use_container_width=True)
-st.sidebar.markdown("---")
-year = st.sidebar.slider("Season Select", 2015, 2024, 2024)
-st.sidebar.info(f"Viewing: {year} Season Summary")
-
-# 4. 直接串接官方 API 邏輯
-@st.cache_data(show_spinner=False)
-def fetch_data(year):
-    s_url = f"https://api.jolpi.ca/ergast/f1/{year}/driverStandings.json"
-    c_url = f"https://api.jolpi.ca/ergast/f1/{year}/circuits.json"
-    
-    standings = []
-    circuits = []
-    
-    try:
-        # 抓取積分榜
-        s_res = requests.get(s_url, timeout=10).json()
-        s_list = s_res['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
-        for item in s_list:
-            standings.append({
-                "Position": item['position'],
-                "Driver": f"{item['Driver']['givenName']} {item['Driver']['familyName']}",
-                "Nationality": item['Driver']['nationality'],
-                "DOB": item['Driver']['dateOfBirth'],
-                "Points": float(item['points']),
-                "Team": item['Constructors'][0]['name']
-            })
-            
-        # 抓取賽道地圖
-        c_res = requests.get(c_url, timeout=10).json()
-        c_list = c_res['MRData']['CircuitTable']['Circuits']
-        for c in c_list:
-            circuits.append({
-                "name": c['circuitName'],
-                "lat": float(c['Location']['lat']),
-                "lon": float(c['Location']['long']),
-                "locality": c['Location']['locality'],
-                "country": c['Location']['country']
-            })
-    except:
-        pass
-    return pd.DataFrame(standings), pd.DataFrame(circuits)
-
-df, df_circuits = fetch_data(year)
-
-# 5. 冠軍 Profile 區塊
-if not df.empty:
-    champ = df.iloc[0]
-    st.markdown(f"# {year} World Champion")
-    
-    col_img, col_info = st.columns([1, 2])
-    
-    with col_img:
-        driver_name = champ['Driver']
-        file_name = driver_name.replace(" ", "_")
-        local_path = f"img/{file_name}.png"
-        
-        # 優先讀取本地 img/ 資料夾下的照片
-        if os.path.exists(local_path):
-            st.image(local_path, width=280)
-        else:
-            # 備用縮寫頭像
-            st.image(f"https://api.dicebear.com/7.x/initials/svg?seed={driver_name}", width=200)
-            
-    with col_info:
-        st.title(driver_name)
-        m1, m2, m3 = st.columns(3)
-        m1.metric("TEAM", champ['Team'])
-        m2.metric("POINTS", f"{int(champ['Points'])} PTS")
-        m3.metric("RANKING", f"P{int(champ['Position'])}")
-        
-        st.divider()
-        
-        inf1, inf2 = st.columns(2)
-        b_year = champ['DOB'].split('-')[0] if 'DOB' in champ else "N/A"
-        inf1.markdown(f"**Birth Year**  \n{b_year}")
-        inf2.markdown(f"**Nationality**  \n{champ['Nationality']}")
-
-st.divider()
-
-# 6. 數據互動分頁
-tab1, tab2 = st.tabs(["Standings", "Circuit Map"])
-
-with tab1:
-    if not df.empty:
-        teams = sorted(df['Team'].unique())
-        selected_teams = st.multiselect("Filter by Team:", teams, default=teams)
-        filtered_df = df[df['Team'].isin(selected_teams)]
-        
-        st.dataframe(
-            filtered_df,
-            use_container_width=True,
-            hide_index=True,
-            column_config={
-                "Points": st.column_config.ProgressColumn("Score Progress", format="%.0f", min_value=0, max_value=int(df['Points'].max())),
-                "Position": "POS", "Driver": "Driver", "Nationality": "NAT", "Team": "Team"
-            }
-        )
-
-with tab2:
-    if not df_circuits.empty:
-        # Plotly 深色地圖
-        fig = px.scatter_mapbox(
-            df_circuits, lat="lat", lon="lon", hover_name="name",
-            hover_data=["locality", "country"], zoom=1, height=500
-        )
-        fig.update_layout(
-            mapbox_style="carto-darkmatter",
-            margin={"r":0,"t":0,"l":0,"b":0},
-            paper_bgcolor="#15151e"
-        )
-        fig.update_traces(marker=dict(size=12, color="#e10600"))
-        st.plotly_chart(fig, use_container_width=True)
-        
-        st.dataframe(df_circuits[['name', 'locality', 'country']], use_container_width=True, hide_index=True)
